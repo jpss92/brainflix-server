@@ -1,18 +1,18 @@
 const express = require("express");
 const fs = require("fs");
-const cors = require("cors");
 const app = express();
 const port = 8080;
+const cors = require("cors");
 
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
 
 app.get('/videos', (req, res) => {
-    const filePath = "./data/video-details.json";
+    const filePath = './data/video-details.json';
 
     fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {
-            console.log(error);
+            console.log(err);
             return res.status(500).json({error: 'Internal Server Error'})
         }
         try {
@@ -24,8 +24,6 @@ app.get('/videos', (req, res) => {
         }
     });
 });
-
-
 
 const dataFilePath = "./data/video-details.json";
 let jsonData = [];
@@ -48,21 +46,19 @@ app.get("/videos/:id", (req,res) => {
 });
 
 app.post("/videos", (req, res) => {
-    const newVideoData = req.body;
-  
-    jsonData.push(newVideoData);
-  
-    fs.writeFile(dataFilePath, JSON.stringify(jsonData), (err) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ error: "Internal Server Error" });
-      }
-  
-      res.json({ message: "Video data added successfully" });
-    });
-  });
 
+    const newVideo = req.body;
+    jsonData.push(newVideo);
+
+    fs.writeFile(dataFilePath, JSON.stringify(jsonData, null, 2), (err) => {
+        if(err) {
+            console.log(err);
+            return res.status(500).json({error:'Error writing to file'});
+        }
+        res.status(201).json({message:'Video added successfully', data: newVideo});
+     });
+});
 
 app.listen(port, () => {
-    console.log(`server is running on port ${port}!`);
+    console.log("server is running on port 8080!");
 });
